@@ -1,6 +1,5 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
-  import { fetchZones, fetchTotem, requestTotemBrief } from '../lib/api.svelte.js';
+    import { fetchZones, fetchTotem, requestTotemBrief } from '../lib/api.svelte.js';
   import { i18n } from '../lib/i18n.svelte.js';
   import EpistemicBadge from './EpistemicBadge.svelte';
   import QrCode from './QrCode.svelte';
@@ -16,7 +15,7 @@
       title: 'Gerbang Pintar',
       titleAccent: 'Pramana',
       subtitle:
-        'Kartu kepatuhan lokasi untuk wisatawan. Pilih gerbang, baca panduan, dengarkan audio, lalu periksa teks pasal aslinya.',
+        'Kartu kepatuhan lokasi untuk wisatawan. Pilih gerbang, baca panduan, lalu periksa teks pasal aslinya.',
       loading: 'Memuat kartu gerbang...',
       loadError: 'Gagal memuat kartu gerbang. Pastikan backend berjalan.',
       retry: 'Coba Lagi',
@@ -38,12 +37,6 @@
         'Ringkasan AI tidak diverifikasi Layer-1. Sitasi di bawah adalah teks korpus terverifikasi.',
       templateNote:
         'Template deterministik dipakai karena AI tidak tersedia atau output AI ditolak guard sitasi.',
-      playAudio: 'Putar Audio',
-      stopAudio: 'Hentikan Audio',
-      ttsNote:
-        'Audio memakai Web Speech API bawaan browser. Ketersediaan suara tergantung perangkat.',
-      ttsUnsupported: 'Browser ini tidak mendukung Web Speech API.',
-      ttsError: 'Audio gagal diputar. Gunakan teks panduan di samping.',
       checks: 'Panduan Utama',
       legalBasis: 'Dasar Hukum Resmi',
       historicalTitle: 'Rujukan Historis',
@@ -76,7 +69,7 @@
       title: 'Smart Gate',
       titleAccent: 'Pramana',
       subtitle:
-        'Location-specific compliance cards for travellers. Choose a gate, read the guidance, listen to the audio, then inspect the original legal text.',
+        'Location-specific compliance cards for travellers. Choose a gate, read the guidance, then inspect the original legal text.',
       loading: 'Loading gate card...',
       loadError: 'Failed to load the gate card. Make sure the backend is running.',
       retry: 'Try Again',
@@ -98,12 +91,6 @@
         'The AI summary is not Layer-1 verified. The citations below are verified corpus text.',
       templateNote:
         'A deterministic template is used because AI is unavailable or the AI output was rejected by the citation guard.',
-      playAudio: 'Play Audio',
-      stopAudio: 'Stop Audio',
-      ttsNote:
-        'Audio uses the browser-native Web Speech API. Voice availability depends on the device.',
-      ttsUnsupported: 'This browser does not support the Web Speech API.',
-      ttsError: 'Audio could not be played. Use the text guidance instead.',
       checks: 'Key Guidance',
       legalBasis: 'Official Legal Basis',
       historicalTitle: 'Historical References',
@@ -146,10 +133,7 @@
   let errorMsg = $state('');
   let brief = $state(null);
   let briefLoading = $state(false);
-  let briefError = $state('');
-  let speaking = $state(false);
-  let ttsError = $state('');
-  let acknowledged = $state(false);
+  let briefError = $state('');  let acknowledged = $state(false);
   let copyStatus = $state('');
   let publicBaseUrl = $state('');
   let requestSeq = 0;
@@ -282,9 +266,7 @@
     errorMsg = '';
     card = null;
     brief = null;
-    briefError = '';
-    ttsError = '';
-    copyStatus = '';
+    briefError = '';    copyStatus = '';
     try {
       const data = await fetchTotem(zoneId, lang);
       if (seq !== requestSeq) return;
@@ -323,44 +305,6 @@
     navigate(`/totem/${id}`);
   }
 
-  function speak() {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      ttsError = t.ttsUnsupported;
-      return;
-    }
-    const text = brief?.brief || card?.tts_text;
-    if (!text) {
-      ttsError = t.ttsError;
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang === 'id' ? 'id-ID' : 'en-US';
-    utterance.rate =
-      typeof window !== 'undefined'
-        ? parseFloat(localStorage.getItem('pramana_tts_rate') || '0.95')
-        : 0.95;
-    utterance.onend = () => {
-      speaking = false;
-    };
-    utterance.onerror = () => {
-      speaking = false;
-      ttsError = t.ttsError;
-    };
-
-    speaking = true;
-    ttsError = '';
-    window.speechSynthesis.speak(utterance);
-  }
-
-  function stopSpeaking() {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    speaking = false;
-  }
-
   $effect(() => {
     const _lang = i18n.lang;
     const _zone = zoneId;
@@ -369,10 +313,6 @@
     } else {
       loadZoneList();
     }
-  });
-
-  onDestroy(() => {
-    stopSpeaking();
   });
 </script>
 
@@ -689,28 +629,6 @@
               </button>
               {#if copyStatus}
                 <p class="font-mono text-[10px]" style="color: #0c249c;">{copyStatus}</p>
-              {/if}
-            </div>
-
-            <div class="brutal-card p-5 space-y-3" style="background-color: #f3f1eb;">
-              <span class="font-mono text-[10px] uppercase font-bold block" style="color: #0c249c;">
-                {t.playAudio}
-              </span>
-              <button
-                type="button"
-                onclick={speaking ? stopSpeaking : speak}
-                class="brutal-press w-full px-4 py-3 font-mono text-xs font-bold cursor-pointer"
-                style={speaking
-                  ? 'background-color: #8a3b00; color: #ffffff; border: 1.5px solid #0a0a0a;'
-                  : 'background-color: #0c249c; color: #ffffff; border: 1.5px solid #0a0a0a; box-shadow: 2px 2px 0px #0a0a0a;'}
-              >
-                {speaking ? t.stopAudio : t.playAudio}
-              </button>
-              <p class="text-[10px] leading-snug" style="color: #5c5952;">{t.ttsNote}</p>
-              {#if ttsError}
-                <p class="text-[10px] leading-snug" style="color: #c92a2a;" aria-live="polite">
-                  {ttsError}
-                </p>
               {/if}
             </div>
 

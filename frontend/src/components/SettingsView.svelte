@@ -3,70 +3,8 @@
 
   let t = $derived(DICT[i18n.lang].settings);
 
-  let ttsRate = $state(
-    typeof localStorage !== 'undefined'
-      ? parseFloat(localStorage.getItem('pramana_tts_rate') || '1.0')
-      : 1.0
-  );
-
-  let ttsVoiceLang = $state(
-    typeof localStorage !== 'undefined'
-      ? localStorage.getItem('pramana_tts_voice_lang') || 'id'
-      : 'id'
-  );
-
-  let isSpeaking = $state(false);
-
   function handleLanguageChange(lang) {
     setLanguage(lang);
-    ttsVoiceLang = lang;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('pramana_tts_voice_lang', lang);
-    }
-  }
-
-  function handleTtsRateChange(rate) {
-    ttsRate = rate;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('pramana_tts_rate', String(rate));
-    }
-  }
-
-  function handleVoiceLangChange(lang) {
-    ttsVoiceLang = lang;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('pramana_tts_voice_lang', lang);
-    }
-  }
-
-  function testTts() {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      alert('Browser ini tidak mendukung Web Speech API.');
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const text =
-      ttsVoiceLang === 'id'
-        ? 'Selamat datang di Bali. Harap hormati kesucian tempat ibadah dan patuhi tata tertib berpakaian adat.'
-        : 'Welcome to Bali. Please respect sacred temple regulations and dress with proper traditional sash and sarong.';
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = ttsVoiceLang === 'id' ? 'id-ID' : 'en-US';
-    utterance.rate = ttsRate;
-
-    isSpeaking = true;
-    utterance.onend = () => { isSpeaking = false; };
-    utterance.onerror = () => { isSpeaking = false; };
-
-    window.speechSynthesis.speak(utterance);
-  }
-
-  function stopTts() {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      isSpeaking = false;
-    }
   }
 
   function clearUserData() {
@@ -100,115 +38,53 @@
   </section>
 
   <section class="px-5 sm:px-10 py-6 sm:py-8 space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-      <!-- CARD 1: Bahasa Tampilan -->
-      <div class="brutal-card p-5 sm:p-6 space-y-4" style="background-color: #ffffff;">
-        <div class="border-b pb-2.5" style="border-color: #cdc9be;">
-          <h2 class="font-mono text-[11px] font-bold uppercase tracking-wider text-[#0c249c]">
-            {t.langCardTitle}
-          </h2>
-          <p class="text-[11px] text-[#5c5952] mt-0.5">{t.langCardSubtitle}</p>
-        </div>
-
-        <div class="space-y-3 pt-1">
-          <button
-            type="button"
-            onclick={() => handleLanguageChange('id')}
-            class="brutal-press w-full p-3.5 text-left border cursor-pointer flex items-center justify-between transition-all"
-            style={i18n.lang === 'id'
-              ? 'background-color: #0c249c; color: #ffffff; border: 1.5px solid #0a0a0a; box-shadow: 2px 2px 0px #0a0a0a;'
-              : 'background-color: #f3f1eb; color: #0a0a0a; border: 1.5px solid #cdc9be;'}
-          >
-            <div class="space-y-0.5">
-              <span class="font-bold text-xs block"><span class="font-mono text-[10px] font-bold px-1.5 py-0.5 bg-[#0c249c] text-white mr-1">ID</span> {t.idLabel}</span>
-              <span class="text-[11px] opacity-80 block">{t.idDesc}</span>
-            </div>
-            {#if i18n.lang === 'id'}
-              <span class="font-mono text-sm font-bold">✓</span>
-            {/if}
-          </button>
-
-          <button
-            type="button"
-            onclick={() => handleLanguageChange('en')}
-            class="brutal-press w-full p-3.5 text-left border cursor-pointer flex items-center justify-between transition-all"
-            style={i18n.lang === 'en'
-              ? 'background-color: #0c249c; color: #ffffff; border: 1.5px solid #0a0a0a; box-shadow: 2px 2px 0px #0a0a0a;'
-              : 'background-color: #f3f1eb; color: #0a0a0a; border: 1.5px solid #cdc9be;'}
-          >
-            <div class="space-y-0.5">
-              <span class="font-bold text-xs block"><span class="font-mono text-[10px] font-bold px-1.5 py-0.5 bg-[#0c249c] text-white mr-1">EN</span> {t.enLabel}</span>
-              <span class="text-[11px] opacity-80 block">{t.enDesc}</span>
-            </div>
-            {#if i18n.lang === 'en'}
-              <span class="font-mono text-sm font-bold">✓</span>
-            {/if}
-          </button>
-        </div>
+    <!-- CARD 1: Bahasa Tampilan -->
+    <div class="brutal-card p-5 sm:p-6 space-y-4" style="background-color: #ffffff;">
+      <div class="border-b pb-2.5" style="border-color: #cdc9be;">
+        <h2 class="font-mono text-[11px] font-bold uppercase tracking-wider text-[#0c249c]">
+          {t.langCardTitle}
+        </h2>
+        <p class="text-[11px] text-[#5c5952] mt-0.5">{t.langCardSubtitle}</p>
       </div>
 
-      <!-- CARD 2: Audio Panduan Gerbang -->
-      <div class="brutal-card p-5 sm:p-6 space-y-4" style="background-color: #ffffff;">
-        <div class="border-b pb-2.5" style="border-color: #cdc9be;">
-          <h2 class="font-mono text-[11px] font-bold uppercase tracking-wider text-[#0c249c]">
-            {t.audioCardTitle}
-          </h2>
-          <p class="text-[11px] text-[#5c5952] mt-0.5">{t.audioCardSubtitle}</p>
-        </div>
-
-        <div class="space-y-3 pt-1">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div>
-              <label for="settings-voice-lang" class="font-mono text-[10px] font-bold text-[#5c5952] block mb-1">
-                {t.voiceLang}
-              </label>
-              <select
-                id="settings-voice-lang"
-                value={ttsVoiceLang}
-                onchange={(e) => handleVoiceLangChange(e.target.value)}
-                class="w-full p-2.5 border border-[#0a0a0a] bg-[#f3f1eb] font-mono text-xs focus:outline-none"
-              >
-                <option value="id">Indonesia (id-ID)</option>
-                <option value="en">English (en-US)</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="settings-voice-speed" class="font-mono text-[10px] font-bold text-[#5c5952] block mb-1">
-                {t.speed}
-              </label>
-              <select
-                id="settings-voice-speed"
-                value={ttsRate}
-                onchange={(e) => handleTtsRateChange(parseFloat(e.target.value))}
-                class="w-full p-2.5 border border-[#0a0a0a] bg-[#f3f1eb] font-mono text-xs focus:outline-none"
-              >
-                <option value="0.85">{t.speedSlow}</option>
-                <option value="1.0">{t.speedNormal}</option>
-                <option value="1.15">{t.speedFast}</option>
-              </select>
-            </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+        <button
+          type="button"
+          onclick={() => handleLanguageChange('id')}
+          class="brutal-press w-full p-3.5 text-left border cursor-pointer flex items-center justify-between transition-all"
+          style={i18n.lang === 'id'
+            ? 'background-color: #0c249c; color: #ffffff; border: 1.5px solid #0a0a0a; box-shadow: 2px 2px 0px #0a0a0a;'
+            : 'background-color: #f3f1eb; color: #0a0a0a; border: 1.5px solid #cdc9be;'}
+        >
+          <div class="space-y-0.5">
+            <span class="font-bold text-xs block"><span class="font-mono text-[10px] font-bold px-1.5 py-0.5 bg-[#0c249c] text-white mr-1">ID</span> {t.idLabel}</span>
+            <span class="text-[11px] opacity-80 block">{t.idDesc}</span>
           </div>
+          {#if i18n.lang === 'id'}
+            <span class="font-mono text-sm font-bold">✓</span>
+          {/if}
+        </button>
 
-          <div class="pt-1">
-            <button
-              type="button"
-              onclick={isSpeaking ? stopTts : testTts}
-              class="brutal-press w-full py-2.5 font-mono text-xs font-bold cursor-pointer"
-              style={isSpeaking
-                ? 'background-color: #8a3b00; color: #ffffff; border: 1.5px solid #0a0a0a;'
-                : 'background-color: #0c249c; color: #ffffff; border: 1.5px solid #0a0a0a; box-shadow: 2px 2px 0px #0a0a0a;'}
-            >
-              {isSpeaking ? t.stopVoiceBtn : t.testVoiceBtn}
-            </button>
+        <button
+          type="button"
+          onclick={() => handleLanguageChange('en')}
+          class="brutal-press w-full p-3.5 text-left border cursor-pointer flex items-center justify-between transition-all"
+          style={i18n.lang === 'en'
+            ? 'background-color: #0c249c; color: #ffffff; border: 1.5px solid #0a0a0a; box-shadow: 2px 2px 0px #0a0a0a;'
+            : 'background-color: #f3f1eb; color: #0a0a0a; border: 1.5px solid #cdc9be;'}
+        >
+          <div class="space-y-0.5">
+            <span class="font-bold text-xs block"><span class="font-mono text-[10px] font-bold px-1.5 py-0.5 bg-[#0c249c] text-white mr-1">EN</span> {t.enLabel}</span>
+            <span class="text-[11px] opacity-80 block">{t.enDesc}</span>
           </div>
-        </div>
+          {#if i18n.lang === 'en'}
+            <span class="font-mono text-sm font-bold">✓</span>
+          {/if}
+        </button>
       </div>
-
     </div>
 
-    <!-- CARD 3: Storage & Privacy -->
+    <!-- CARD 2: Storage & Privacy -->
     <div class="brutal-card p-5 sm:p-6 space-y-3" style="background-color: #f3f1eb;">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2.5" style="border-color: #cdc9be;">
         <div>

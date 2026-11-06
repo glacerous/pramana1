@@ -73,7 +73,7 @@ export const DICT = {
     settings: {
       badge: '05 // PREFERENSI PENGGUNA',
       title: 'Pengaturan',
-      subtitle: 'Sesuaikan bahasa antarmuka, suara panduan audio di tempat wisata, dan riwayat perangkat.',
+      subtitle: 'Sesuaikan bahasa antarmuka dan riwayat perangkat.',
       langCardTitle: 'BAHASA ANTARMUKA',
       langCardSubtitle: 'Pilih bahasa tampilan untuk seluruh halaman aplikasi.',
       idLabel: 'Bahasa Indonesia',
@@ -119,7 +119,7 @@ export const DICT = {
       badge: '03 // PANDUAN LOKASI WISATA',
       title: 'Gerbang Pintar',
       titleAccent: 'Pramana',
-      subtitle: 'Kartu kepatuhan langsung di lokasi. Pilih gerbang wisata, dengarkan audio panduan, dan patuhi aturan setempat.',
+      subtitle: 'Kartu kepatuhan langsung di lokasi. Pilih gerbang wisata dan patuhi aturan setempat.',
       tapNote: 'Halaman ini otomatis terbuka saat kamu tap stiker NFC atau scan QR di gerbang masuk tempat wisata.',
       openGate: 'Buka Gerbang',
       scanQrBtn: 'Pindai QR / Tap NFC',
@@ -267,7 +267,7 @@ export const DICT = {
     settings: {
       badge: '05 // USER PREFERENCES',
       title: 'Settings',
-      subtitle: 'Configure interface language, on-site audio guide voice, and device storage.',
+      subtitle: 'Configure interface language and device storage.',
       langCardTitle: 'INTERFACE LANGUAGE',
       langCardSubtitle: 'Choose the display language for the entire application.',
       idLabel: 'Bahasa Indonesia',
