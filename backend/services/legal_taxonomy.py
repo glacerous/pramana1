@@ -163,7 +163,7 @@ LEGAL_DOMAIN_CLUSTERS: Dict[str, Dict[str, Any]] = {
             "daya tarik wisata", "standar usaha", "ketertiban umum",
             "pengelola wisata", "kepariwisataan", "pariwisata",
             "akomodasi", "pemandu wisata", "izin usaha pariwisata",
-            "tata tertib wisatawan", "scooter", "scooters", "without license", "rented scooters", "riding", "rented", "deport", "deported", "illegal business", "licensed local guides", "local guides", "tour guide", "tourist guide", "licensed guide",
+            "tata tertib wisatawan", "scooter", "scooters", "without license", "rented scooters", "riding", "rented", "deport", "deported", "illegal business", "licensed local guides", "local guides", "telanjang", "tanpa busana", "tanpa pakaian", "naked", "nude", "tour guide", "tourist guide", "licensed guide",
         ],
         "inject_keywords": [
             "daya tarik wisata", "standar usaha pariwisata", "ketertiban umum",
@@ -214,7 +214,7 @@ LOCATION_TERMS = (
     "bangli", "bandara", "pelabuhan", "pantai", "beach club", "restoran",
     "hotel", "villa", "kafe", "pasar", "jalan raya", "terminal", "desa adat",
     "medsos", "tiktok", "instagram", "whatsapp", "facebook", "twitter",
-    "pohon suci", "kawasan suci", "area pura", "temple", "temples", "shrine", "mount", "batur", "site", "sacred site", "beach", "airport", "cafe", "restaurant", "nusa penida",
+    "pohon suci", "kawasan suci", "area pura", "temple", "temples", "shrine", "mount", "batur", "site", "sacred site", "beach", "airport", "cafe", "restaurant", "nusa penida", "jalan", "jalanan", "jalan-jalan", "tempat umum", "ruang publik", "public", "street", "road",
 )
 
 ACTION_TERMS = (
@@ -226,7 +226,7 @@ ACTION_TERMS = (
     "menyalakan", "berisik", "memakai", "mengenakan", "merusak", "mencuri",
     "menodai", "menolak", "mengejek", "mengucapkan", "berteriak", "memukul",
     "menganiaya", "overstay", "bikin ulah", "mengganggu", "berbuat",
-    "melakukan", "mengemudi", "membawa", "dipukul", "dihina", "climb", "climbed", "climbing", "posed", "naked", "nude", "nudity", "riding", "ride", "rented", "rent", "deport", "deported", "deportation", "expel", "throw", "trash", "illegal", "without license", "damage", "damaging", "telanjang", "throwing", "littering",
+    "melakukan", "mengemudi", "membawa", "dipukul", "dihina", "climb", "climbed", "climbing", "posed", "naked", "nude", "nudity", "riding", "ride", "rented", "rent", "deport", "deported", "deportation", "expel", "throw", "trash", "illegal", "without license", "damage", "damaging", "telanjang", "throwing", "littering", "tanpa busana", "tanpa baju", "buka baju", "topless", "mabuk", "drunk", "tanpa helm", "no helmet",
 )
 
 LEGAL_QUERY_TERMS = (
@@ -334,7 +334,7 @@ def assess_factual_completeness(text: str) -> Dict[str, Any]:
         for term in (
             "wisatawan", "wna", "wni", "bule", "warga", "pengunjung",
             "turis", "pelaku usaha", "staf", "petugas", "pemandu", "pedagang",
-            "akun", "hotel", "restoran", "beach club", "tourist", "tourists", "foreigner", "foreigners", "authorities", "driver",
+            "akun", "hotel", "restoran", "beach club", "tourist", "tourists", "foreigner", "foreigners", "authorities", "driver", "orang", "seseorang", "anomali", "manusia", "someone", "person", "people", "guy", "girl", "stranger",
         )
     )
 
