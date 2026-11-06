@@ -55,7 +55,7 @@ LEGAL_DOMAIN_CLUSTERS: Dict[str, Dict[str, Any]] = {
             "foto tidak sopan", "sedang haid masuk pura", "menstruasi",
             "utama mandala", "kawasan suci", "tempat suci", "pratima",
             "pecalang", "desa adat", "catur brata", "nyepi", "busana adat",
-            "pura", "upacara adat", "kegiatan keagamaan", "tree", "sacred tree", "sacred", "holy", "temple", "temples", "mount batur", "posed naked", "climbed", "climb", "batur", "sacred site",
+            "pura", "upacara adat", "kegiatan keagamaan", "tree", "sacred tree", "sacred", "holy", "temple", "temples", "mount batur", "posed naked", "climbed", "climb", "batur", "sacred site", "plastic trash", "throwing plastic", "trash", "littering", "plastic bottles",
         ],
         "inject_keywords": [
             "kawasan suci", "utama mandala", "pohon keramat", "busana adat",
@@ -84,7 +84,7 @@ LEGAL_DOMAIN_CLUSTERS: Dict[str, Dict[str, Any]] = {
             "bebas pungutan", "cara bayar pungutan", "wna belum bayar",
             "pungutan wisman", "pungutan wisatawan", "pungutan asing",
             "pungutan", "retribusi", "kitas", "kitap", "golden visa",
-            "visa diplomatik", "levy", "tourist levy", "150k", "love bali online", "pay levy", "pay the bali tourist levy", "deport", "deported",
+            "visa diplomatik", "levy", "tourist levy", "150k", "love bali online", "pay levy", "pay the bali tourist levy", "deport", "deported", "exchange currency", "money changers", "money changer", "kupva", "authorized kupva",
         ],
         "inject_keywords": [
             "pungutan wisatawan asing", "Rp150.000", "pembayaran elektronik",
@@ -163,7 +163,7 @@ LEGAL_DOMAIN_CLUSTERS: Dict[str, Dict[str, Any]] = {
             "daya tarik wisata", "standar usaha", "ketertiban umum",
             "pengelola wisata", "kepariwisataan", "pariwisata",
             "akomodasi", "pemandu wisata", "izin usaha pariwisata",
-            "tata tertib wisatawan", "scooter", "scooters", "without license", "rented scooters", "riding", "rented", "deport", "deported", "illegal business",
+            "tata tertib wisatawan", "scooter", "scooters", "without license", "rented scooters", "riding", "rented", "deport", "deported", "illegal business", "licensed local guides", "local guides", "tour guide", "tourist guide", "licensed guide",
         ],
         "inject_keywords": [
             "daya tarik wisata", "standar usaha pariwisata", "ketertiban umum",
@@ -214,7 +214,7 @@ LOCATION_TERMS = (
     "bangli", "bandara", "pelabuhan", "pantai", "beach club", "restoran",
     "hotel", "villa", "kafe", "pasar", "jalan raya", "terminal", "desa adat",
     "medsos", "tiktok", "instagram", "whatsapp", "facebook", "twitter",
-    "pohon suci", "kawasan suci", "area pura", "temple", "temples", "shrine", "mount", "batur", "site", "sacred site", "beach", "airport", "cafe", "restaurant",
+    "pohon suci", "kawasan suci", "area pura", "temple", "temples", "shrine", "mount", "batur", "site", "sacred site", "beach", "airport", "cafe", "restaurant", "nusa penida",
 )
 
 ACTION_TERMS = (
@@ -226,14 +226,14 @@ ACTION_TERMS = (
     "menyalakan", "berisik", "memakai", "mengenakan", "merusak", "mencuri",
     "menodai", "menolak", "mengejek", "mengucapkan", "berteriak", "memukul",
     "menganiaya", "overstay", "bikin ulah", "mengganggu", "berbuat",
-    "melakukan", "mengemudi", "membawa", "dipukul", "dihina", "climb", "climbed", "climbing", "posed", "naked", "nude", "nudity", "riding", "ride", "rented", "rent", "deport", "deported", "deportation", "expel", "throw", "trash", "illegal", "without license", "damage", "damaging",
+    "melakukan", "mengemudi", "membawa", "dipukul", "dihina", "climb", "climbed", "climbing", "posed", "naked", "nude", "nudity", "riding", "ride", "rented", "rent", "deport", "deported", "deportation", "expel", "throw", "trash", "illegal", "without license", "damage", "damaging", "telanjang", "throwing", "littering",
 )
 
 LEGAL_QUERY_TERMS = (
     "aturan", "aturannya", "sanksi", "kewajiban", "larangan", "hukum",
     "dasar hukum", "pasal", "regulasi", "peraturan", "ketentuan", "prosedur",
     "tata cara", "persyaratan", "mekanisme", "hukuman", "pidana", "denda",
-    "apa", "apakah", "bagaimana", "berapa", "mengapa", "kenapa",
+    "apa", "apakah", "bagaimana", "berapa", "mengapa", "kenapa", "mandatory", "required", "is it mandatory",
 )
 
 REGISTRY_ONLY_TRIGGERS = {
@@ -300,15 +300,22 @@ def detect_registry_only(text: str) -> Optional[str]:
 
 def assess_factual_completeness(text: str) -> Dict[str, Any]:
     normalized = _normalize(text)
+    out_of_scope_phrases = (
+        "weather", "forecast", "cuaca", "prakiraan", "ramalan cuaca",
+        "berapa lama visa turis berlaku", "masa berlaku visa",
+        "how long is tourist visa valid", "visa validity",
+    )
+    is_out_of_scope_query = _contains_any(normalized, out_of_scope_phrases)
     matched_clusters = []
     matched_terms: List[str] = []
-    for cluster_id, cluster in LEGAL_DOMAIN_CLUSTERS.items():
-        if cluster_id == "REGISTRY_ONLY":
-            continue
-        hits = _matched_terms(normalized, cluster["triggers"])
-        if hits:
-            matched_clusters.append(cluster_id)
-            matched_terms.extend(hits)
+    if not is_out_of_scope_query:
+        for cluster_id, cluster in LEGAL_DOMAIN_CLUSTERS.items():
+            if cluster_id == "REGISTRY_ONLY":
+                continue
+            hits = _matched_terms(normalized, cluster["triggers"])
+            if hits:
+                matched_clusters.append(cluster_id)
+                matched_terms.extend(hits)
 
     registry_only = detect_registry_only(normalized)
     if registry_only:
@@ -398,6 +405,7 @@ def assess_factual_completeness(text: str) -> Dict[str, Any]:
         tone = "Kronologi Faktual"
 
     return {
+        "is_out_of_scope": is_out_of_scope_query,
         "candidate_clusters": matched_clusters,
         "candidate_labels": [
             LEGAL_DOMAIN_CLUSTERS[cluster_id]["label"]

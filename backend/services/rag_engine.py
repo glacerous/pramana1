@@ -565,6 +565,8 @@ class StrictRAGEngine:
         mode1: bool = False,
     ) -> str:
         """Select the epistemic tier deterministically before any LLM call."""
+        if taxonomy.get("is_out_of_scope"):
+            return "OUT_OF_SCOPE_GUIDANCE"
         if taxonomy.get("registry_only_match"):
             return "NEEDS_CLARIFICATION"
 
@@ -583,8 +585,6 @@ class StrictRAGEngine:
             taxonomy.get("is_factually_complete")
         ) or (
             bool(taxonomy.get("is_direct_legal_query")) and top_score >= 0.50
-        ) or (
-            keyword_top >= 0.50 and (taxonomy.get("has_actor") or taxonomy.get("has_action"))
         )
         if top_score >= 0.50 and factually_complete:
             return "VERIFIED_GROUNDED"
@@ -1413,6 +1413,10 @@ class StrictRAGEngine:
         mode = self._routing_mode(
             top_score, keyword_top, taxonomy, mode1=False
         )
+        if taxonomy.get("is_out_of_scope"):
+            mode = "OUT_OF_SCOPE_GUIDANCE"
+            matched_regs = []
+            top_score = 0.0
         if is_injection:
             taxonomy = {
                 **taxonomy,
